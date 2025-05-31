@@ -1,0 +1,114 @@
+import React from 'react';
+import { useEffect } from 'react';
+import classNames from 'classnames/bind';
+import styles from './Contact.module.scss';
+import Header from '../../Layouts/Header/Header';
+import Footer from '../../Layouts/Footer/Footer';
+import Banner from '../Layouts/Banner/Banner';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome, faPhone } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope } from '@fortawesome/free-regular-svg-icons';
+import { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import request from '../../config/Connect';
+import { Helmet } from 'react-helmet';
+
+const cx = classNames.bind(styles);
+
+function Contact() {
+    const [message, setMessage] = useState();
+    const [email, setEmail] = useState();
+
+    const handleSendMessage = async () => {
+        try {
+            request
+                .post('/api/sendmessage', {
+                    message,
+                    email,
+                })
+                .then((res) => toast.success(res.data.message));
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        document.title = 'Liên Hệ';
+        let metaDesc = document.querySelector('meta[name="description"]');
+        if (!metaDesc) {
+            metaDesc = document.createElement('meta');
+            metaDesc.name = "description";
+            document.head.appendChild(metaDesc);
+        }
+        metaDesc.content = "Liên hệ để được tư vấn và hỗ trợ.";
+    }, []);
+
+    return (
+        <><Helmet>
+                <title>Liên Hệ</title>
+                <meta name="description" content="Liên hệ để được tư vấn và hỗ trợ." />
+                <meta name="keywords" content="liên hệ, hỗ trợ, tư vấn" />
+            </Helmet>
+        <div className={cx('wrapper')}>
+            <ToastContainer />
+            <header>
+                <Header />
+            </header>
+            <div>
+                <Banner />
+            </div>
+            <div className={cx('inner')}>
+                <div className={cx('column-left')}>
+                    <h1>Để lại liên hệ</h1>
+                    <div class="form-floating">
+                        <textarea
+                            class="form-control"
+                            placeholder="Leave a comment here"
+                            id="floatingTextarea2"
+                            style={{ height: '100px' }}
+                            onChange={(e) => setMessage(e.target.value)}
+                        ></textarea>
+                        <label for="floatingTextarea2">Enter message</label>
+                    </div>
+
+                    <div>
+                        <div class="input-group mb-3">
+                            <input
+                                type="text"
+                                class="form-control"
+                                placeholder="Email"
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <button onClick={handleSendMessage}>Gửi thông tin</button>
+                    </div>
+                </div>
+
+                <div className={cx('column-right')}>
+                    <div className={cx('form-icons')}>
+                        <FontAwesomeIcon icon={faHome} />
+                        ABC
+                    </div>
+
+                    <div className={cx('form-icons')}>
+                        <FontAwesomeIcon icon={faPhone} />
+                        091.234.5678
+                    </div>
+
+                    <div className={cx('form-icons')}>
+                        <FontAwesomeIcon icon={faEnvelope} />
+                        contact@gmail.com
+                    </div>
+                </div>
+            </div>
+            <footer>
+                <Footer />
+            </footer>
+        </div>
+        </>
+    );
+}
+
+export default Contact;

@@ -26,7 +26,7 @@ class ControllerPayments {
                     vnp_TxnRef: dataCart._id,
                     vnp_OrderInfo: `Thanh toan don hang ${dataCart._id}`,
                     vnp_OrderType: ProductCode.Other,
-                    vnp_ReturnUrl: 'http://localhost:5000/vnpay-return',
+                    vnp_ReturnUrl: 'http://localhost:5001/vnpay-return',
                     vnp_Locale: VnpLocale.VN,
                 });
                 return res.status(200).json(paymentUrl);

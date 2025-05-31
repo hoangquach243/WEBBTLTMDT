@@ -27,7 +27,7 @@ function InfoUser() {
 
     const token = document.cookie;
 
-    const domain = 'http://localhost:5000/avatars/';
+    const domain = 'http://localhost:5001/avatars/';
 
     const navigate = useNavigate();
 

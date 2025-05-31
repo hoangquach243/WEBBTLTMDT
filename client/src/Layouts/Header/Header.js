@@ -58,7 +58,7 @@ function Header() {
                             {dataSearch.map((item) => (
                                 <Link to={`/prodetail/${item?.id}`} key={item?._id} id={cx('test')}>
                                     <div className={cx('form-result')}>
-                                        <img id={cx('img-result')} src={`http://localhost:5000/${item?.img}`} alt="" />
+                                        <img id={cx('img-result')} src={`http://localhost:5001/${item?.img}`} alt="" />
                                         <h5>{item?.nameProducts}</h5>
                                         <span>{item?.priceNew?.toLocaleString()} đ</span>
                                     </div>

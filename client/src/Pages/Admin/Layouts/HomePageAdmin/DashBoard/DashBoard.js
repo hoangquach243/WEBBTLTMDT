@@ -96,7 +96,7 @@ function Dashboard() {
                     </div>
                 </div>
                 <div className={cx('info-user')}>
-                    <img src={`http://localhost:5000/avatars/${dataUser?.avatar}`} alt="Avatar" />
+                    <img src={`http://localhost:5001/avatars/${dataUser?.avatar}`} alt="Avatar" />
                     <div className={cx('info')}>
                         <h2>{dataUser?.fullname}</h2>
                         <span>0{dataUser?.phone}</span>

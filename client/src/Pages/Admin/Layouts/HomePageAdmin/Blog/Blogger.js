@@ -67,7 +67,7 @@ function Blogger() {
                                 1
                             </th>
                             <td>
-                                <img style={{ width: '150px' }} src={`http://localhost:5000/blog/${item.img}`} alt="" />
+                                <img style={{ width: '150px' }} src={`http://localhost:5001/blog/${item.img}`} alt="" />
                             </td>
                             <td style={{ color: '#fff' }}>{item.title}</td>
                             <td style={{ color: '#fff' }}>{item.des}</td>

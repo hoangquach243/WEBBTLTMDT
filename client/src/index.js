@@ -19,18 +19,31 @@ root.render(
                         return <Route key={index} path={route.path} element={route.element} />;
                     })}
                     {privateRoute.map((route, index) => {
-                        const token = document.cookie;
-                        if (token) {
-                            const decoded = jwtDecode(token.slice(6, 9999));
-                            if (decoded.admin) {
-                                return <Route key={route.path} path={route.path} element={route.element} />;
-                            } else if (decoded.employee) {
-                                return <Route key={route.path} path={route.path} element={route.element} />;
-                            } else {
-                                return <Route path="/" element={<App />} />;
+                        const cookies = document.cookie.split(';');
+                        let token = null;
+
+                        // Tìm token trong cookies
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i].trim();
+                            if (cookie.startsWith('Token=')) {
+                                token = cookie.substring('Token='.length);
+                                break;
                             }
                         }
-                        return <Route path="/" element={<App />} />;
+
+                        try {
+                            if (token) {
+                                const decoded = jwtDecode(token);
+                                if (decoded && (decoded.admin || decoded.employee)) {
+                                    return <Route key={route.path} path={route.path} element={route.element} />;
+                                }
+                            }
+                        } catch (error) {
+                            console.error('Invalid token:', error);
+                        }
+
+                        // Nếu không có token hoặc không có quyền admin/employee, chuyển hướng về trang chủ
+                        return <Route key={index} path={route.path} element={<App />} />;
                     })}
                 </Routes>
             </Router>

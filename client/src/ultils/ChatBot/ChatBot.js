@@ -6,7 +6,7 @@ import io from 'socket.io-client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
-const socket = io('http://localhost:5000', {
+const socket = io('http://localhost:5001', {
     withCredentials: true,
     transports: ['websocket'],
 });

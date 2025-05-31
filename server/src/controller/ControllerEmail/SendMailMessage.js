@@ -25,7 +25,7 @@ const sendMailMessage = async (email, message) => {
             },
         });
         const info = await transport.sendMail({
-            from: `Apex Fashion" <${process.env.USER_EMAIL}>`, // sender address
+            from: `Mao Cloth" <${process.env.USER_EMAIL}>`, // sender address
             to: email, // list of receivers
             subject: 'Thanks', // Subject line
             text: 'Hello world?', // plain text body

@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames/bind';
 import styles from './Blogger.module.scss';
 
-import picture from './img/logo.png';
+import picture from './img/logo2.png';
 import Header from '../../Layouts/Header/Header';
 import Footer from '../../Layouts/Footer/Footer';
 import Banner from '../Layouts/Banner/Banner';

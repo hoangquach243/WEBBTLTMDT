@@ -71,12 +71,12 @@ function Contact() {
                 <div className={cx('column-right')}>
                     <div className={cx('form-icons')}>
                         <FontAwesomeIcon icon={faHome} />
-                        Apex Fashion
+                        Mao Cloth
                     </div>
 
                     <div className={cx('form-icons')}>
                         <FontAwesomeIcon icon={faPhone} />
-                        091.234.5678
+                        085.367.2403
                     </div>
 
                     <div className={cx('form-icons')}>

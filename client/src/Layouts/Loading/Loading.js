@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames/bind';
 import styles from './Loading.module.scss';
 
-import imgLoading from './img/logo.png';
+import imgLoading from './img/logo2.png';
 
 const cx = classNames.bind(styles);
 

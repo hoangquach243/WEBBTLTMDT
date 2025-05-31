@@ -7,15 +7,12 @@ function ChatBot(message, io) {
         setTimeout(() => {
             io.emit(
                 'message',
-                'Apex Fashion là một trong những nền tảng mua sắm trực tuyến hàng đầu tại Việt Nam với sứ mệnh mang đến cho khách hàng những sản phẩm chất lượng cao về thể thao và phong cách sống. Với sự đa dạng và phong phú trong danh mục sản phẩm, Apex Fashion cung cấp những lựa chọn đa dạng từ giày dép, quần áo, phụ kiện đến dụng cụ thể thao và các sản phẩm phong cách hàng ngày.',
+                'Mao Cloth là một trong những nền tảng mua sắm trực tuyến hàng đầu tại Việt Nam với sứ mệnh mang đến cho khách hàng những sản phẩm chất lượng cao về thể thao và phong cách sống. Với sự đa dạng và phong phú trong danh mục sản phẩm, Mao Cloth cung cấp những lựa chọn đa dạng từ giày dép, quần áo, phụ kiện đến dụng cụ thể thao và các sản phẩm phong cách hàng ngày.',
             );
         }, 1000);
     } else if (message.toLowerCase() === 'chuỗi cửa hàng của mình ở đâu') {
         setTimeout(() => {
-            io.emit(
-                'message',
-                'HN',
-            );
+            io.emit('message', 'HN');
         }, 1000);
     } else if (message.toLowerCase() === 'bạn giới thiệu về mình đi') {
         setTimeout(() => {

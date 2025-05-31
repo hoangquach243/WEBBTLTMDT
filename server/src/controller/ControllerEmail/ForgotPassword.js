@@ -25,7 +25,7 @@ const ForgotPassword = async (email, token, otp) => {
             },
         });
         const info = await transport.sendMail({
-            from: `Apex Fashion" <${process.env.USER_EMAIL}>`, // sender address
+            from: `Mao Cloth" <${process.env.USER_EMAIL}>`, // sender address
             to: email, // list of receivers
             subject: 'Forgot Password', // Subject line
             text: 'Hello world?', // plain text body

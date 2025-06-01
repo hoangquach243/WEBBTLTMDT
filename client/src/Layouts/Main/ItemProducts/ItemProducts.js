@@ -43,7 +43,13 @@ function ItemProducts({ dataProducts }) {
     const handlePrev = () => {
         setCurrentIndex((prev) => (prev - 1 >= 0 ? prev - 1 : totalPages - 1));
     };
-
+    let val = 100;
+    if(productsToShow.length > 4) {
+       val = 80;
+    }
+    else{
+        val = 100;
+    }
     return (
         <div className={cx('wrapper')}>
             <button className={cx('arrow', 'left')} onClick={handlePrev}>
@@ -55,7 +61,7 @@ function ItemProducts({ dataProducts }) {
                     className={cx('slider-inner')}
                     style={{
                         transform: `translateX(-${currentIndex * 100}%)`,
-                        width: `${(80/ VISIBLE_COUNT) * productsToShow.length}%`,
+                        width: `${(val/ VISIBLE_COUNT) * productsToShow.length}%`,
                     }}
                 >
                     {productsToShow.map((product) => (

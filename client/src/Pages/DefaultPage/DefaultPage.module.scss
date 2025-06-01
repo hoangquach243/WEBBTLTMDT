@@ -1,19 +1,395 @@
+/* DefaultPage.module.scss */
+
+// --- Variables (Cập nhật màu sắc và khoảng cách để trông hiện đại hơn) ---
+$primary-color: #ff6f61; // Màu cam san hô nổi bật
+$secondary-color: #40c4ff; // Màu xanh dương nhẹ
+$text-dark: #2d3436; // Màu chữ đậm
+$text-light: #636e72; // Màu chữ nhạt
+$border-color: #dfe6e9; // Viền nhẹ
+$background-light: #f5f7fa; // Nền sáng
+$white: #ffffff;
+$spacing-xs: 8px;
+$spacing-sm: 12px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+
+// Chiều cao của header
+$header-height-compensation: 80px;
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: $background-light;
+}
+
+.banner {
+    margin-top: $header-height-compensation;
+    margin-bottom: $spacing-xl;
+    background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%); // Gradient cho banner
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: $spacing-lg;
+    transition: transform 0.3s ease;
+
+    &:hover {
+        transform: scale(1.01); // Hiệu ứng phóng to nhẹ khi hover
+    }
+}
+
 .main-category {
+    flex-grow: 1;
     width: 100%;
+    padding: $spacing-lg 0;
 }
 
 .container {
     display: flex;
-    width: 80%;
-    margin: 30px auto;
+    width: 85%;
+    max-width: 1400px; // Tăng chiều rộng tối đa để tận dụng không gian
+    margin: 0 auto;
+    gap: $spacing-xl;
+    align-items: flex-start;
 }
 
-.banner {
-    margin-top: 80px;
+/* Responsive cho container */
+@media only screen and (max-width: 1200px) {
+    .container {
+        width: 90%;
+        gap: $spacing-lg;
+    }
+}
+
+@media only screen and (max-width: 992px) {
+    .container {
+        flex-direction: column;
+        width: 95%;
+        gap: $spacing-md;
+    }
+
+    .banner {
+        margin-bottom: $spacing-lg;
+    }
+    .main-category {
+        padding: $spacing-md 0;
+    }
 }
 
 @media only screen and (max-width: 600px) {
     .container {
-        flex-direction: column;
+        width: 98%;
+        padding: 0 $spacing-sm;
     }
+    .banner {
+        margin-bottom: $spacing-md;
+    }
+}
+
+// --- Cải thiện SlideBar ---
+.slide-bar-section {
+    flex-shrink: 0;
+    width: 280px; // Đã tăng chiều rộng để chứa ô lọc
+    padding: $spacing-md;
+    background-color: $white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); // Bóng đổ mềm mại
+    box-sizing: border-box;
+    transition: transform 0.3s ease;
+
+    &:hover {
+        transform: translateY(-2px); // Hiệu ứng nâng nhẹ khi hover
+    }
+
+    .filter-dropdown {
+        width: 100%;
+        padding: $spacing-sm $spacing-md;
+        margin-bottom: $spacing-md;
+        border: 1px solid $border-color;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 500;
+        color: $text-dark;
+        background-color: $background-light;
+        cursor: pointer;
+        position: relative;
+        box-sizing: border-box;
+        max-width: 100%;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+        // Mũi tên dropdown đẹp hơn
+        appearance: none;
+        background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%204%205%22%3E%3Cpath%20fill%3D%22%23636e72%22%20d%3D%22M2%205L0%203h4z%22%2F%3E%3C%2Fsvg%3E');
+        background-repeat: no-repeat;
+        background-position: right $spacing-sm center;
+        background-size: 12px;
+
+        &:hover {
+            border-color: $primary-color;
+            box-shadow: 0 2px 8px rgba($primary-color, 0.15);
+        }
+
+        &:focus {
+            outline: none;
+            border-color: $primary-color;
+            box-shadow: 0 0 8px rgba($primary-color, 0.3);
+        }
+    }
+
+    h4 {
+        font-size: 18px;
+        font-weight: 600;
+        color: $text-dark;
+        margin-bottom: $spacing-md;
+        border-bottom: 2px solid $primary-color; // Dòng gạch chân nổi bật
+        padding-bottom: $spacing-sm;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    li {
+        margin-bottom: $spacing-sm;
+
+        a {
+            display: block;
+            padding: $spacing-xs $spacing-sm;
+            color: $text-light;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 6px;
+            transition: color 0.3s ease, background-color 0.3s ease;
+
+            &:hover {
+                color: $primary-color;
+                background-color: rgba($primary-color, 0.1);
+            }
+        }
+
+        input[type='radio'],
+        input[type='checkbox'] {
+            margin-right: $spacing-xs;
+            accent-color: $primary-color;
+            transform: scale(1.2); // Phóng to checkbox/radio
+        }
+
+        label {
+            color: $text-dark;
+            font-size: 16px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+
+            &:hover {
+                color: $primary-color;
+            }
+        }
+    }
+
+    @media only screen and (max-width: 992px) {
+        width: 100%;
+        order: -1;
+        margin-bottom: $spacing-md;
+    }
+}
+
+// --- Cải thiện danh sách sản phẩm (giả định HomePage dùng cấu trúc tương tự) ---
+.product-list-section {
+    flex-grow: 1;
+    width: 100%;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: $spacing-lg;
+
+    @media only screen and (max-width: 1200px) {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: $spacing-md;
+    }
+
+    @media only screen and (max-width: 768px) {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: $spacing-md;
+    }
+
+    @media only screen and (max-width: 480px) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: $spacing-sm;
+    }
+}
+
+.product-card {
+    background-color: $white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .product-image {
+        width: 100%;
+        height: 220px; // Tăng chiều cao hình ảnh
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        border-bottom: 1px solid $border-color;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        &:hover img {
+            transform: scale(1.1); // Hiệu ứng phóng to ảnh khi hover
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba($text-dark, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+        }
+
+        &:hover .overlay {
+            opacity: 1;
+        }
+
+        .add-to-cart-button-overlay {
+            background-color: $primary-color;
+            color: $white;
+            padding: $spacing-sm $spacing-md;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: background-color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+
+            &:hover {
+                background-color: darken($primary-color, 10%);
+            }
+        }
+
+        &:hover .add-to-cart-button-overlay {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .product-info {
+        padding: $spacing-md;
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-sm;
+        flex-grow: 1;
+
+        h4 {
+            font-size: 18px;
+            font-weight: 600;
+            color: $text-dark;
+            line-height: 1.3;
+            height: 2.6em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            transition: color 0.3s ease;
+
+            &:hover {
+                color: $primary-color; // Tên sản phẩm đổi màu khi hover
+            }
+        }
+
+        p {
+            font-size: 14px;
+            color: $text-light;
+        }
+
+        .product-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: $primary-color;
+            margin-top: auto;
+        }
+    }
+}
+
+// --- Cải thiện phân trang ---
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: $spacing-xl;
+    gap: $spacing-sm;
+
+    button {
+        background-color: $white;
+        border: 1px solid $border-color;
+        padding: $spacing-sm $spacing-md;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        color: $text-dark;
+        transition: all 0.3s ease;
+
+        &:hover {
+            background-color: $primary-color;
+            border-color: $primary-color;
+            color: $white;
+        }
+
+        &.active {
+            background-color: $primary-color;
+            color: $white;
+            border-color: $primary-color;
+            font-weight: 600;
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+            background-color: $background-light;
+            color: $text-light;
+            border-color: $border-color;
+        }
+    }
+}
+
+.no-products-message {
+    text-align: center;
+    font-size: 18px;
+    color: $text-light;
+    padding: $spacing-xl;
+    width: 100%;
+    background-color: $white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }

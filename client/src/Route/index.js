@@ -2,7 +2,7 @@ import React from 'react';
 import App from '../App';
 import Loading from '../Layouts/Loading/Loading';
 import DefaultLayout from '../Pages/Admin/DefaultLayout/DefaultLayout';
-import Aboutus from '../Pages/Blog/Aboutus';
+import Blogger from '../Pages/Blog/Aboutus';
 import CartUser from '../Pages/Cart/Cart';
 import Checkout from '../Pages/Checkout/Checkout';
 import Contact from '../Pages/Contact/Contact';
@@ -26,7 +26,7 @@ export const publicRoutes = [
     { path: '/info', element: <InfoUser /> },
     { path: '/thanks', element: <SuccessfulPaymentPage /> },
     { path: '/contact', element: <Contact /> },
-    { path: '/aboutus', element: <Aboutus /> },
+    { path: '/aboutus', element: <Blogger /> },
     { path: '/forgot-password', element: <ForgotPassword /> },
 ];
 

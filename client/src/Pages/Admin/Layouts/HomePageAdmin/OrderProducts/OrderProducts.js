@@ -11,7 +11,6 @@ const cx = classNames.bind(styles);
 function OrderProducts() {
     const [dataOrder, setDataOrder] = useState([]);
     const [show, setShow] = useState(false);
-    const [idProduct, setIdProduct] = useState(false);
     const [id, setId] = useState('');
 
     useEffect(() => {
@@ -72,7 +71,7 @@ function OrderProducts() {
                     </tbody>
                 </table>
             ))}
-            <CheckProduct show={show} setShow={setShow} idProduct={idProduct} />
+            <CheckProduct show={show} setShow={setShow} idProduct={id} />
             <ModalEditOrder show={show} setShow={setShow} id={id} />
         </div>
     );

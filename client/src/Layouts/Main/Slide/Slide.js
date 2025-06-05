@@ -26,13 +26,13 @@ function SlideWeb() {
         <div className={cx('slide-container')}>
             <Slider {...settings}>
                 <div>
-                    <img id={cx('test')} src={imgBanner} />
+                    <img id={cx('test')} src={imgBanner} alt="Slide 1" />
                 </div>
                 <div>
-                    <img id={cx('test')} src={imgBanner4} />
+                    <img id={cx('test')} src={imgBanner4} alt="Slide 2" />
                 </div>
                 <div>
-                    <img id={cx('test')} src={imgBanner5} />
+                    <img id={cx('test')} src={imgBanner5} alt="Slide 3" />
                 </div>
             </Slider>
         </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames/bind';
 import styles from './SlideBar.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBlog, faCartPlus, faChartLine, faFile, faHome, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faBlog, faCartPlus, faFile, faHome, faUser } from '@fortawesome/free-solid-svg-icons';
 import { jwtDecode } from 'jwt-decode';
 import { useState } from 'react';
 const cx = classNames.bind(styles);

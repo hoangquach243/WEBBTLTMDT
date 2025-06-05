@@ -4,8 +4,7 @@ import styles from './HomePage.module.scss';
 
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCartPlus, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import { faHeart } from '@fortawesome/free-regular-svg-icons';
+import { faCartPlus } from '@fortawesome/free-solid-svg-icons';
 import { addProduct } from '../../../redux/actions';
 import { useDispatch } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';

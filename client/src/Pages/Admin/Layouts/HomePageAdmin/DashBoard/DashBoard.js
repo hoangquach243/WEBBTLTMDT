@@ -3,7 +3,7 @@ import classNames from 'classnames/bind';
 import styles from './DashBoard.module.scss';
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCartShopping, faChartSimple, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faChartSimple, faUser } from '@fortawesome/free-solid-svg-icons';
 
 import request from '../../../../../config/Connect';
 

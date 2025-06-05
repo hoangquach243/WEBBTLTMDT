@@ -33,15 +33,8 @@ function Header() {
     };
 
     useEffect(() => {
-        try {
-            if (searchValue === '') {
-                return;
-            }
-            request.get('/api/search', { params: { nameProduct: debounce } }).then((res) => setDataSearch(res.data));
-        } catch (error) {
-            console.log(error);
-        }
-    }, [debounce]);
+        request.get('/api/search', { params: { nameProduct: debounce } }).then((res) => setDataSearch(res.data));
+    }, [debounce]); // Change dependency from searchValue to debounce
 
     useEffect(() => {
         const handleScroll = () => {
@@ -130,7 +123,7 @@ function Header() {
                                             <div className={cx('search-item-image')}>
                                                 <img
                                                     src={`http://localhost:5001/${item?.img}`}
-                                                    alt={item?.nameProducts}
+                                                    alt={item?.nameProducts || ''}
                                                 />
                                             </div>
                                             <div className={cx('search-item-info')}>

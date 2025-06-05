@@ -6,9 +6,14 @@ function useDebounce(value, delay) {
 
     useEffect(() => {
         // tao effect
-        const handler = setTimeout(() => setDebounceValue(value), delay);
-        return () => clearTimeout(handler);
-    }, [value]);
+        const timer = setTimeout(() => {
+            setDebounceValue(value);
+        }, delay);
+
+        return () => {
+            clearTimeout(timer);
+        };
+    }, [value, delay]); // Thêm delay vào dependency array
     return debounceValue;
 }
 

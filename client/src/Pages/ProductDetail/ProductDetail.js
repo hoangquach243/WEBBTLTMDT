@@ -38,7 +38,7 @@ function ProductDetail() {
 
     useEffect(() => {
         request.get('/api/comment', { params: { id: idProduct } }).then((res) => setDataComments(res.data));
-    }, []);
+    }, [idProduct]);
 
     useEffect(() => {
         request
@@ -53,7 +53,7 @@ function ProductDetail() {
             return;
         }
         request.get('/api/dataorder').then((res) => setDataOrder(res.data));
-    }, []);
+    }, [token, setDataOrder]);
 
     useEffect(() => {
         const checkRating = dataComments.map((item) => item.rating).reduce((a, b) => a + b, 0) / dataComments.length;

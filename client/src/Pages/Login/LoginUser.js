@@ -26,12 +26,11 @@ function LoginUser() {
         } else {
             try {
                 // Thực hiện đăng nhập
-                const res = await request.post('/api/login', {
+                await request.post('/api/login', {
                     // Gửi yêu cầu đăng nhập đến server
                     email, // Gửi email và password để đăng nhập
                     password,
                 });
-                // navigate('/'); // Chuyển hướng đến trang chủ
                 const token = document.cookie;
 
                 const decoded = jwtDecode(token);

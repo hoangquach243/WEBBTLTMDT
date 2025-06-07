@@ -10,6 +10,7 @@ import DefaultPage from '../Pages/DefaultPage/DefaultPage';
 import ForgotPassword from '../Pages/ForgotPassword/ForgotPassword';
 import InfoUser from '../Pages/InfoUser/InfoUser';
 import LoginUser from '../Pages/Login/LoginUser';
+import OrderHistory from '../Pages/OrderHistory/OrderHistory';
 import ProductDetail from '../Pages/ProductDetail/ProductDetail';
 import RegisterUser from '../Pages/Register/RegisterUser';
 import SuccessfulPaymentPage from '../Pages/SuccessfulPaymentPage/SuccessfulPaymentPage';
@@ -29,6 +30,7 @@ export const publicRoutes = [
     { path: '/prodetail/:id', element: <ProductDetail /> },
     { path: '/loading', element: <Loading /> },
     { path: '/info', element: <InfoUser /> },
+    { path: '/order-history', element: <OrderHistory /> },
     { path: '/thanks', element: <SuccessfulPaymentPage /> },
     { path: '/contact', element: <Contact /> },
     { path: '/aboutus', element: <Blogger /> },

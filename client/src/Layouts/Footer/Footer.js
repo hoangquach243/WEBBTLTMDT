@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames/bind';
 import styles from './Footer.module.scss';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebookF, faInstagram, faTiktok, faYoutube } from '@fortawesome/free-brands-svg-icons';
 import {
@@ -22,6 +22,14 @@ import PaymentLogo from './img/payment.png';
 const cx = classNames.bind(styles);
 
 function Footer() {
+    const navigate = useNavigate();
+
+    // Hàm để chuyển hướng và cuộn lên đầu trang
+    const navigateToPage = (path) => {
+        navigate(path);
+        window.scrollTo(0, 0);
+    };
+
     return (
         <div className={cx('wrapper')}>
             <div className={cx('inner')}>
@@ -70,42 +78,63 @@ function Footer() {
                         <ul className={cx('footer-links')}>
                             <li>
                                 <FontAwesomeIcon icon={faShieldHalved} />
-                                <Link to="/chinh-sach-doi-tra">Chính sách đổi trả và bảo hành</Link>
+                                <a
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        navigateToPage('/chinh-sach-doi-tra');
+                                    }}
+                                >
+                                    Chính sách đổi trả và bảo hành
+                                </a>
                             </li>
                             <li>
                                 <FontAwesomeIcon icon={faTruck} />
-                                <Link to="/chinh-sach-van-chuyen">Chính sách vận chuyển</Link>
+                                <a
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        navigateToPage('/chinh-sach-van-chuyen');
+                                    }}
+                                >
+                                    Chính sách vận chuyển
+                                </a>
                             </li>
                             <li>
                                 <FontAwesomeIcon icon={faFileLines} />
-                                <Link to="/chinh-sach-bao-mat">Chính sách bảo mật</Link>
+                                <a
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        navigateToPage('/chinh-sach-bao-mat');
+                                    }}
+                                >
+                                    Chính sách bảo mật
+                                </a>
                             </li>
                             <li>
                                 <FontAwesomeIcon icon={faFileLines} />
-                                <Link to="/dieu-khoan-su-dung">Điều khoản sử dụng</Link>
+                                <a
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        navigateToPage('/dieu-khoan-su-dung');
+                                    }}
+                                >
+                                    Điều khoản sử dụng
+                                </a>
                             </li>
                             <li>
                                 <FontAwesomeIcon icon={faCircleQuestion} />
-                                <Link to="/huong-dan-mua-hang">Hướng dẫn mua hàng</Link>
-                            </li>
-                        </ul>
-                    </div>
-
-                    {/* Liên kết hữu ích */}
-                    <div className={cx('footer-column')}>
-                        <h3 className={cx('footer-title')}>Liên kết hữu ích</h3>
-                        <ul className={cx('footer-links')}>
-                            <li>
-                                <Link to="/sitemap">Sơ đồ trang web</Link>
-                            </li>
-                            <li>
-                                <Link to="/blog">Blog thời trang</Link>
-                            </li>
-                            <li>
-                                <Link to="/huong-dan-chon-size">Hướng dẫn chọn size</Link>
-                            </li>
-                            <li>
-                                <Link to="/faq">Câu hỏi thường gặp</Link>
+                                <a
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        navigateToPage('/huong-dan-mua-hang');
+                                    }}
+                                >
+                                    Hướng dẫn mua hàng
+                                </a>
                             </li>
                         </ul>
 

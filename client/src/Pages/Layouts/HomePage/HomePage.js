@@ -4,8 +4,7 @@ import styles from './HomePage.module.scss';
 
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCartPlus, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import { faHeart } from '@fortawesome/free-regular-svg-icons';
+import { faCartPlus } from '@fortawesome/free-solid-svg-icons';
 import { addProduct } from '../../../redux/actions';
 import { useDispatch } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
@@ -13,7 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const cx = classNames.bind(styles);
 
-function HomePage({ dataProducts, checkPrice, checkType2, checkType3 }) {
+function HomePage({ dataProducts }) {
     const dispatch = useDispatch();
 
     const handleAddProduct = (data) => {
@@ -21,26 +20,38 @@ function HomePage({ dataProducts, checkPrice, checkType2, checkType3 }) {
         toast.success('Thêm Vào Giỏ Hàng Thành Công !!!');
     };
 
+    // Hàm xử lý đường dẫn hình ảnh
+    const getImageUrl = (imgPath) => {
+        if (!imgPath) return '';
+
+        // Nếu là URL đầy đủ hoặc đã có tiền tố http
+        if (imgPath.startsWith('http')) {
+            return imgPath;
+        }
+
+        // Nếu là đường dẫn tương đối
+        return `http://localhost:5001/${imgPath}`;
+    };
+
     return (
         <div className={cx('wrapper')}>
             <ToastContainer />
-            <div className={cx('inner')}>
-                {dataProducts
-                    .filter((item) => checkType2 === '' || item.checkType === checkType2)
-                    .filter((item) => checkType3 === '' || item.checkType === checkType3)
-                    .sort(checkPrice === '1' ? (a, b) => b.priceNew - a.priceNew : (a, b) => a.priceNew - b.priceNew)
-                    .map((item) => (
+            {dataProducts.length === 0 ? (
+                <div className={cx('no-products')}>Không tìm thấy sản phẩm nào phù hợp</div>
+            ) : (
+                <div className={cx('inner')}>
+                    {dataProducts.map((item) => (
                         <div key={item.id} className={cx('form-slide-products')}>
                             <div className={cx('social-icon')}>
                                 <button onClick={() => handleAddProduct(item)}>
                                     <FontAwesomeIcon icon={faCartPlus} />
                                 </button>
                             </div>
-                            <Link style={{ textDecoration: 'none' }} key={item.id} to={`/prodetail/${item.id}`}>
+                            <Link className={cx('product-image-link')} key={item.id} to={`/prodetail/${item.id}`}>
                                 <img
-                                    src={`${item.img}`}
-                                    alt=""
-                                    style={{ width: '300px', height: '300px', objectFit: 'cover' }}
+                                    src={getImageUrl(item.img)}
+                                    alt={item.nameProducts}
+                                    className={cx('product-image')}
                                 />
                             </Link>
                             <div className={cx('main-slide-products')}>
@@ -51,7 +62,8 @@ function HomePage({ dataProducts, checkPrice, checkType2, checkType3 }) {
                             </div>
                         </div>
                     ))}
-            </div>
+                </div>
+            )}
         </div>
     );
 }

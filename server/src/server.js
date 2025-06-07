@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const ChatBot = require('./utils/ChatBot');
 const path = require('path');
+const seedData = require('./seedData');
 
 const http = require('http');
 const { Server } = require('socket.io');
@@ -25,7 +26,25 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '')));
 route(app);
 app.use(express.static('uploads'));
-connectDB();
+
+// Kết nối database và seed dữ liệu
+const startServer = async () => {
+    try {
+        await connectDB();
+        console.log('MongoDB connected');
+
+        // Seed dữ liệu mẫu
+        await seedData();
+
+        server.listen(port, () => {
+            console.log(`Example app listening on port ${port}`);
+        });
+    } catch (error) {
+        console.error('Lỗi khi khởi động server:', error);
+    }
+};
+
+startServer();
 
 io.on('connection', (socket) => {
     console.log('New client connected');
@@ -39,8 +58,4 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('Client disconnected');
     });
-});
-
-server.listen(port, () => {
-    console.log(`Example app listening on port ${port}`);
 });

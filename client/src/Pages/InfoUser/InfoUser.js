@@ -59,6 +59,10 @@ function InfoUser() {
 
     const handleChangeAvatar = async (event) => {
         event.preventDefault();
+        if (!selectedFile) {
+            toast.error('Vui lòng chọn ảnh trước khi thay đổi');
+            return;
+        }
         const formData = new FormData();
         formData.append('avatar', selectedFile);
         try {
@@ -71,6 +75,7 @@ function InfoUser() {
             console.log('Avatar uploaded successfully');
         } catch (error) {
             console.error('Error uploading avatar:', error);
+            toast.error('Lỗi khi tải ảnh lên. Vui lòng thử lại.');
         }
     };
 
@@ -98,7 +103,15 @@ function InfoUser() {
                         <img src={domain + dataUser?.avatar} alt="..." />
                         <h3>{dataUser?.fullname}</h3>
                         <div className={cx('change-avatar')}>
-                            <button onClick={handleChangeAvatar}>Thay Đổi Ảnh </button>
+                            <input
+                                type="file"
+                                name="file"
+                                id="file"
+                                onChange={(e) => setSelectedFile(e.target.files[0])}
+                                className={cx('inputfile')}
+                            />
+                            <label htmlFor="file">Chọn Ảnh</label>
+                            <button onClick={handleChangeAvatar}>Cập Nhật Ảnh</button>
                         </div>
                         <button onClick={handleModalEditInfo}>Thay Đổi Thông Tin</button>
                         <button onClick={handleLogout}>Đăng Xuất</button>
@@ -119,16 +132,6 @@ function InfoUser() {
                         </div>
 
                         <div className={cx('input-change')}>
-                            <>
-                                <input
-                                    type="file"
-                                    name="file"
-                                    id="file"
-                                    onChange={(e) => setSelectedFile(e.target.files[0])}
-                                    className={cx('inputfile')}
-                                />
-                                <label htmlFor="file">Chọn Ảnh</label>
-                            </>
                             <button id={cx('btn-change')} onClick={handleShowModal}>
                                 Thay Đổi Mật Khẩu
                             </button>

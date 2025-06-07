@@ -9,40 +9,66 @@ import HomePage from '../Layouts/HomePage/HomePage';
 import request from '../../config/Connect';
 
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
 function DefaultPage() {
-    const [valueType, setValueType] = useState('');
-    const [checkPrice, setCheckPrice] = useState('0');
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+
+    const [valueType, setValueType] = useState(queryParams.get('category') || '');
+    const [checkType2, setCheckType2] = useState(queryParams.get('type') || '');
+    const [checkPrice, setCheckPrice] = useState('');
     const [dataProducts, setDataProducts] = useState([]);
-    const [checkType2, setCheckType2] = useState('');
-    const [checkType3, setCheckType3] = useState('');
-
-    const perPage = 6;
+    const [loading, setLoading] = useState(false);
     const [totalPages, setTotalPages] = useState(0);
+    const perPage = 6;
 
+    // Cập nhật URL khi các tham số lọc thay đổi
+    useEffect(() => {
+        const params = new URLSearchParams();
+        if (valueType) params.set('category', valueType);
+        if (checkType2) params.set('type', checkType2);
+
+        const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
+        window.history.replaceState({}, '', newUrl);
+    }, [valueType, checkType2]);
+
+    // Fetch sản phẩm khi các tham số lọc thay đổi
     useEffect(() => {
         const fetchData = async () => {
+            setLoading(true);
             try {
-                const response = await request.get('/api/products');
+                console.log('Fetching products with params:', {
+                    category: valueType,
+                    type: checkType2,
+                    priceSort: checkPrice,
+                });
+                const response = await request.get('/api/products', {
+                    params: {
+                        category: valueType,
+                        type: checkType2,
+                        priceSort: checkPrice,
+                    },
+                });
+
+                setDataProducts(response.data);
                 const totalItems = response.data.length;
                 const calculatedTotalPages = Math.ceil(totalItems / perPage);
-
-                setDataProducts(response.data.filter((item) => valueType === '' || item.checkProducts === valueType));
-
                 setTotalPages(calculatedTotalPages);
             } catch (error) {
                 console.error('Error fetching data:', error);
+                // Trong trường hợp lỗi, hiển thị mảng rỗng
+                setDataProducts([]);
+                setTotalPages(0);
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchData();
-    }, [valueType]);
-
-    function checkProducts(data) {
-        return data.checkProducts === valueType;
-    }
+    }, [valueType, checkType2, checkPrice]);
 
     return (
         <div className={cx('wrapper')}>
@@ -59,24 +85,23 @@ function DefaultPage() {
                     <div>
                         <SlideBar
                             setValueType={setValueType}
-                            dataProducts={dataProducts}
                             setCheckPrice={setCheckPrice}
                             valueType={valueType}
                             setCheckType2={setCheckType2}
-                            setCheckType3={setCheckType3}
                         />
                     </div>
 
                     <div>
-                        <HomePage
-                            dataProducts={dataProducts}
-                            checkProducts={checkProducts}
-                            valueType={valueType}
-                            totalPages={totalPages}
-                            checkPrice={checkPrice}
-                            checkType2={checkType2}
-                            checkType3={checkType3}
-                        />
+                        {loading ? (
+                            <div className={cx('loading')}>Đang tải sản phẩm...</div>
+                        ) : (
+                            <HomePage
+                                dataProducts={dataProducts}
+                                totalPages={totalPages}
+                                checkPrice={checkPrice}
+                                checkType2={checkType2}
+                            />
+                        )}
                     </div>
                 </div>
             </main>

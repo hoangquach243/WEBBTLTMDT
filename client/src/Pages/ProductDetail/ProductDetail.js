@@ -36,6 +36,19 @@ function ProductDetail() {
         toast.success('Thêm Vào Giỏ Hàng Thành Công !!!');
     };
 
+    // Hàm xử lý đường dẫn hình ảnh
+    const getImageUrl = (imgPath) => {
+        if (!imgPath) return '';
+
+        // Nếu là URL đầy đủ hoặc đã có tiền tố http
+        if (imgPath.startsWith('http')) {
+            return imgPath;
+        }
+
+        // Nếu là đường dẫn tương đối
+        return `http://localhost:5001/${imgPath}`;
+    };
+
     useEffect(() => {
         request.get('/api/comment', { params: { id: idProduct } }).then((res) => setDataComments(res.data));
     }, []);
@@ -99,8 +112,8 @@ function ProductDetail() {
                     <header className={cx('form-info-product')}>
                         <div className={cx('img-product')}>
                             <img
-                                src={`${dataProducts?.img}`}
-                                alt=""
+                                src={getImageUrl(dataProducts?.img)}
+                                alt={dataProducts?.nameProducts || 'Sản phẩm'}
                                 style={{ width: '500px', height: '500px', objectFit: 'cover' }}
                             />
                         </div>
@@ -126,8 +139,8 @@ function ProductDetail() {
                             <span style={{ color: '#000' }}> {dataProducts?.priceNew.toLocaleString()} VNĐ</span>
                             <h6 style={{ color: '#000' }}>
                                 {dataProducts?.quantityPro > 0
-                                    ? `Còn hàng : số lượng ${dataProducts?.quantityPro}`
-                                    : 'Hết hàng'}{' '}
+                                    ? `Còn hàng : số lượng ${dataProducts?.quantityPro}`
+                                    : 'Hết hàng'}{' '}
                             </h6>
 
                             <div className={cx('btn-add-product')}>
@@ -197,7 +210,7 @@ function ProductDetail() {
 
                         <div className={cx('comments-user')}>
                             {dataComments.map((item) => (
-                                <div className={cx('form-comment')}>
+                                <div className={cx('form-comment')} key={item._id}>
                                     <img
                                         src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D"
                                         alt=""

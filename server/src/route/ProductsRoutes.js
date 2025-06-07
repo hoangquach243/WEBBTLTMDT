@@ -3,6 +3,8 @@ const router = express.Router();
 const ControllerProducts = require('../controller/ControllerProducts/ControllerProducts');
 
 router.get('/api/products', ControllerProducts.GetProducts);
+router.get('/api/categories', ControllerProducts.GetCategories);
+router.get('/api/product-types', ControllerProducts.GetProductTypes);
 router.get('/api/getproduct', ControllerProducts.GetOneProduct);
 router.post('/api/cart', ControllerProducts.PostCart);
 router.get('/api/getcart', ControllerProducts.GetCart);

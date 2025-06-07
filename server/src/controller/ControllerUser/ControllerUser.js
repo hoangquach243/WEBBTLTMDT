@@ -145,6 +145,11 @@ class ControllerUser {
         try {
             const token = req.cookies.Token;
             const decoded = jwt.decode(token.Token);
+
+            if (!req.file) {
+                return res.status(400).json({ error: 'Không tìm thấy file ảnh' });
+            }
+
             const urlImg = req.file.filename;
 
             ModelUser.findOne({ email: decoded.email }).then((dataUser) => {
@@ -199,12 +204,32 @@ class ControllerUser {
     }
 
     GetOrder(req, res) {
-        const token = req.cookies.Token;
-        const decoded = jwt.decode(token.Token);
-        if (decoded) {
-            ModelPaymentSuccess.find({ email: decoded.email }).then((dataOrder) => {
-                return res.status(200).json(dataOrder);
-            });
+        try {
+            const token = req.cookies.Token;
+            if (!token) {
+                return res.status(401).json({ message: 'Không tìm thấy token' });
+            }
+
+            const decoded = jwt.decode(token.Token);
+            if (!decoded) {
+                return res.status(401).json({ message: 'Token không hợp lệ' });
+            }
+
+            console.log('Tìm đơn hàng cho email:', decoded.email);
+
+            ModelPaymentSuccess.find({ email: decoded.email })
+                .sort({ createdAt: -1 }) // Sắp xếp theo thời gian tạo, mới nhất lên đầu
+                .then((dataOrder) => {
+                    console.log('Đã tìm thấy đơn hàng:', dataOrder.length);
+                    return res.status(200).json(dataOrder);
+                })
+                .catch((error) => {
+                    console.error('Lỗi khi tìm đơn hàng:', error);
+                    return res.status(500).json({ message: 'Lỗi khi tìm đơn hàng' });
+                });
+        } catch (error) {
+            console.error('Lỗi xử lý GetOrder:', error);
+            return res.status(500).json({ message: 'Lỗi máy chủ' });
         }
     }
 

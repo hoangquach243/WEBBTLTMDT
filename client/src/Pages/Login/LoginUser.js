@@ -13,38 +13,64 @@ import { jwtDecode } from 'jwt-decode';
 const cx = classNames.bind(styles);
 
 function LoginUser() {
-    const [email, setEmail] = useState(''); // Tạo state để lưu email
-    const [password, setPassword] = useState(''); // Tạo state để lưu password
-    const navigate = useNavigate(); // Tạo state để lưu password
+    const [email, setEmail] = useState(''); // Tạo state để lưu email
+    const [password, setPassword] = useState(''); // Tạo state để lưu password
+    const navigate = useNavigate(); // Tạo state để lưu password
+
+    // Hàm để lấy giá trị token từ cookie
+    const getTokenFromCookie = () => {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'Token') {
+                return value;
+            }
+        }
+        return null;
+    };
+
     const handleLoginUser = async () => {
-        // Hàm xử lý đăng nhập
-        var pattern = /[A-Z]/; // Kiểm tra xem chuỗi có chứa ký tự viết hoa hay không
+        // Hàm xử lý đăng nhập
+        var pattern = /[A-Z]/; // Kiểm tra xem chuỗi có chứa ký tự viết hoa hay không
         const test = pattern.test(email);
         if (email === '' || password === '' || test === true) {
-            // Kiểm tra xem email, password
-            toast.error('Vui Lòng Xem Lại Thông Tin !!!'); // Hàm toast.error hiển thị thông báo lỗi
+            // Kiểm tra xem email, password
+            toast.error('Vui Lòng Xem Lại Thông Tin !!!'); // Hàm toast.error hiển thị thông báo lỗi
         } else {
             try {
-                // Thực hiện đăng nhập
+                // Thực hiện đăng nhập
                 const res = await request.post('/api/login', {
-                    // Gửi yêu cầu đăng nhập đến server
-                    email, // Gửi email và password để đăng nhập
+                    // Gửi yêu cầu đăng nhập đến server
+                    email, // Gửi email và password để đăng nhập
                     password,
                 });
-                // navigate('/'); // Chuyển hướng đến trang chủ
-                const token = document.cookie;
 
-                const decoded = jwtDecode(token);
-                if (decoded.admin === true) {
-                    navigate('/admin');
-                } else if (decoded.employee === true) {
-                    navigate('/admin');
-                } else {
-                    navigate('/');
-                }
+                // Đợi một chút để đảm bảo cookie đã được thiết lập
+                setTimeout(() => {
+                    const token = getTokenFromCookie();
+
+                    if (token) {
+                        try {
+                            const decoded = jwtDecode(token);
+                            if (decoded.admin === true) {
+                                navigate('/admin');
+                            } else if (decoded.employee === true) {
+                                navigate('/admin');
+                            } else {
+                                navigate('/');
+                            }
+                        } catch (error) {
+                            console.error('Lỗi giải mã token:', error);
+                            toast.error('Đăng nhập thành công nhưng có lỗi xử lý. Vui lòng thử lại.');
+                        }
+                    } else {
+                        console.error('Không tìm thấy token sau khi đăng nhập');
+                        navigate('/');
+                    }
+                }, 300);
             } catch (error) {
-                // Nếu đăng nhập thất bại
-                toast.error(error.response.data.message); // Hiển thị thông báo lỗi
+                // Nếu đăng nhập thất bại
+                toast.error(error.response?.data?.message || 'Đăng nhập thất bại. Vui lòng thử lại.'); // Hiển thị thông báo lỗi
             }
         }
     };
@@ -89,7 +115,7 @@ function LoginUser() {
                     </div>
                     <div className={cx('login-footer')}>
                         <p>
-                            Don’t have an account?{' '}
+                            Don't have an account?{' '}
                             <Link id={cx('link')} to="/register">
                                 Sign Up
                             </Link>{' '}

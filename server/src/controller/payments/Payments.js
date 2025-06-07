@@ -79,15 +79,32 @@ class ControllerPayments {
     }
 
     async GetProductsSuccess(req, res) {
-        const token = req.cookies;
-        const decoded = jwtDecode(token.Token);
-        ModelPaymentSuccess.findOne({ email: decoded.email })
-            .sort({ id: 'desc' })
-            .exec()
-            .then((data) => {
-                return res.status(200).json([[data]]);
-            });
+        try {
+            const token = req.cookies;
+            if (!token || !token.Token) {
+                return res.status(403).json({ message: 'Bạn Cần Đăng Nhập Lại !!!' });
+            }
+
+            const decoded = jwtDecode(token.Token);
+            if (!decoded.email) {
+                return res.status(403).json({ message: 'Bạn Cần Đăng Nhập Lại !!!' });
+            }
+
+            const latestOrder = await ModelPaymentSuccess.findOne({ email: decoded.email })
+                .sort({ createdAt: -1 })
+                .exec();
+
+            if (!latestOrder) {
+                return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+            }
+
+            return res.status(200).json([[latestOrder]]);
+        } catch (error) {
+            console.error('Lỗi khi lấy thông tin đơn hàng:', error);
+            return res.status(500).json({ message: 'Đã xảy ra lỗi', error: error.message });
+        }
     }
+
     async Payments(req, res) {
         try {
             const token = req.cookies;

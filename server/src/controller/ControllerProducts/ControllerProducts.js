@@ -7,11 +7,54 @@ require('dotenv').config();
 
 class ControllerProducts {
     GetProducts(req, res) {
-        ModelProducts.find({}).then((dataProducts) => {
-            const newdataProducts = dataProducts.sort((a, b) => a.priceNew - b.priceNew);
-            return res.status(200).json(newdataProducts);
+        // Lấy các tham số lọc từ query
+        const { category, type, priceSort } = req.query;
+
+        // Xây dựng điều kiện lọc
+        let filter = {};
+        if (category && category !== '') {
+            filter.checkProducts = category;
+        }
+        if (type && type !== '') {
+            filter.checkType = type;
+        }
+
+        // Thực hiện truy vấn với filter
+        ModelProducts.find(filter).then((dataProducts) => {
+            // Sắp xếp theo giá
+            let sortedProducts = [...dataProducts];
+            if (priceSort === '1') {
+                // Sắp xếp giảm dần
+                sortedProducts.sort((a, b) => b.priceNew - a.priceNew);
+            } else {
+                // Sắp xếp tăng dần (mặc định)
+                sortedProducts.sort((a, b) => a.priceNew - b.priceNew);
+            }
+
+            return res.status(200).json(sortedProducts);
         });
     }
+
+    // Lấy danh sách các danh mục sản phẩm
+    GetCategories(req, res) {
+        ModelProducts.distinct('checkProducts').then((categories) => {
+            return res.status(200).json(categories);
+        });
+    }
+
+    // Lấy danh sách các loại sản phẩm theo danh mục
+    GetProductTypes(req, res) {
+        const { category } = req.query;
+
+        if (!category) {
+            return res.status(400).json({ message: 'Thiếu tham số category' });
+        }
+
+        ModelProducts.distinct('checkType', { checkProducts: category }).then((types) => {
+            return res.status(200).json(types);
+        });
+    }
+
     GetOneProduct(req, res) {
         const id = req.query.id;
         ModelProducts.findOne({ id: id }).then((dataProducts) => res.status(200).json(dataProducts));

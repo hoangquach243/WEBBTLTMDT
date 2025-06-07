@@ -14,39 +14,81 @@ export function ModalAddProduct({ show, setShow }) {
     const handleClose = () => setShow(false);
 
     const [nameProduct, setNameProduct] = useState('');
+    const [fileImg, setFileImg] = useState(null);
     const [priceProduct, setPriceProduct] = useState(0);
     const [desProduct, setDesProduct] = useState('');
-    const [fileImg, setFileImg] = useState('');
-    const [selectedCheckbox, setSelectedCheckbox] = useState('');
-
-    const [checkOption, setCheckOption] = useState('0');
+    const [checkProducts, setCheckProducts] = useState('');
     const [checkType, setCheckType] = useState('');
     const [quantityPro, setQuantityPro] = useState(0);
+    const [categories, setCategories] = useState([]);
+    const [productTypes, setProductTypes] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-    const handleCheckboxChange = (checkboxName) => {
-        if (selectedCheckbox === checkboxName) {
-            setSelectedCheckbox('');
-        } else {
-            setSelectedCheckbox(checkboxName);
-        }
+    // Lấy danh sách danh mục sản phẩm từ database
+    useEffect(() => {
+        const fetchCategories = async () => {
+            setLoading(true);
+            try {
+                const response = await request.get('/api/categories');
+                setCategories(response.data);
+            } catch (error) {
+                console.error('Lỗi khi lấy danh mục:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+    // Lấy danh sách loại sản phẩm khi chọn danh mục
+    useEffect(() => {
+        const fetchProductTypes = async () => {
+            if (checkProducts) {
+                setLoading(true);
+                try {
+                    const response = await request.get('/api/product-types', {
+                        params: { category: checkProducts },
+                    });
+                    setProductTypes(response.data);
+                } catch (error) {
+                    console.error('Lỗi khi lấy loại sản phẩm:', error);
+                } finally {
+                    setLoading(false);
+                }
+            } else {
+                setProductTypes([]);
+            }
+        };
+
+        fetchProductTypes();
+    }, [checkProducts]);
+
+    // Hàm chuyển đổi tên danh mục thành tên hiển thị
+    const getCategoryDisplayName = (categoryCode) => {
+        const categoryMap = {
+            nuocHoa: 'Nước Hoa',
+            nenThom: 'Nến Thơm',
+            giay: 'Giày',
+            son: 'Son',
+            fashionMen: 'Thời Trang Nam',
+            fashionWomen: 'Thời Trang Nữ',
+            áo: 'Áo',
+            quần: 'Quần',
+            váy: 'Váy',
+        };
+
+        return categoryMap[categoryCode] || categoryCode;
     };
 
     const handleAddProduct = async () => {
-        const formData = new FormData();
-        formData.append('imgpro', fileImg);
-
-        const checkProduct = selectedCheckbox || (checkOption === '1' ? 'fashionMen' : 'fashionWomen');
-
         try {
-            if (!nameProduct || !priceProduct || !desProduct || quantityPro === 0 || !fileImg) {
-                toast.error('Vui lòng điền đầy đủ thông tin !!!');
-                return;
-            }
-
-            formData.append('nameProduct', nameProduct);
-            formData.append('priceProduct', priceProduct);
-            formData.append('desProduct', desProduct);
-            formData.append('checkProduct', checkProduct);
+            const formData = new FormData();
+            formData.append('nameProducts', nameProduct);
+            formData.append('img', fileImg);
+            formData.append('priceNew', priceProduct);
+            formData.append('des', desProduct);
+            formData.append('checkProducts', checkProducts);
             formData.append('checkType', checkType);
             formData.append('quantityPro', quantityPro);
 
@@ -116,76 +158,38 @@ export function ModalAddProduct({ show, setShow }) {
                         </div>
                     </div>
 
-                    <div className={cx('option')}>
-                        <div className={cx('form-checkbox')}>
-                            <label>Nước Hoa</label>
-                            <input
-                                type="checkbox"
-                                checked={selectedCheckbox === 'nuocHoa'}
-                                onChange={() => handleCheckboxChange('nuocHoa')}
-                            />
-                        </div>
-
-                        <div className={cx('form-checkbox')}>
-                            <label>Nến Thơm</label>
-                            <input
-                                type="checkbox"
-                                onChange={() => handleCheckboxChange('nenThom')}
-                                checked={selectedCheckbox === 'nenThom'}
-                            />
-                        </div>
-
-                        <div className={cx('form-checkbox')}>
-                            <label>Son</label>
-                            <input
-                                type="checkbox"
-                                checked={selectedCheckbox === 'son'}
-                                onChange={() => handleCheckboxChange('son')}
-                            />
-                        </div>
+                    <div className="mb-3">
+                        <label className="form-label">Danh mục sản phẩm</label>
+                        <select
+                            className="form-select"
+                            onChange={(e) => setCheckProducts(e.target.value)}
+                            value={checkProducts}
+                            disabled={loading}
+                        >
+                            <option value="">Chọn danh mục</option>
+                            {categories.map((category) => (
+                                <option key={category} value={category}>
+                                    {getCategoryDisplayName(category)}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
-                    {selectedCheckbox === '' && (
-                        <div>
+                    {productTypes.length > 0 && (
+                        <div className="mb-3">
+                            <label className="form-label">Loại sản phẩm</label>
                             <select
-                                onChange={(e) => setCheckOption(e.target.value)}
-                                className="form-select mt-3"
-                                aria-label="Default select example"
-                            >
-                                <option value="0">Thời Trang</option>
-                                <option value="1">Thời Trang Nam</option>
-                                <option value="2">Thời Trang Nữ</option>
-                            </select>
-                        </div>
-                    )}
-
-                    {checkOption === '1' && (
-                        <div>
-                            <select
+                                className="form-select"
                                 onChange={(e) => setCheckType(e.target.value)}
-                                className="form-select mt-3"
-                                aria-label="Default select example"
+                                value={checkType}
+                                disabled={loading}
                             >
-                                <option value="">Loại</option>
-                                <option value="trousers">Áo</option>
-                                <option value="shirt">Quần</option>
-                                <option value="giay">Giày Nam</option>
-                            </select>
-                        </div>
-                    )}
-
-                    {checkOption === '2' && (
-                        <div>
-                            <select
-                                onChange={(e) => setCheckType(e.target.value)}
-                                className="form-select mt-3"
-                                aria-label="Default select example"
-                            >
-                                <option value="">Loại</option>
-                                <option value="trousers">Áo</option>
-                                <option value="shirt">Quần</option>
-                                <option value="dress">Váy</option>
-                                <option value="giay">Giày Nữ</option>
+                                <option value="">Chọn loại</option>
+                                {productTypes.map((type) => (
+                                    <option key={type} value={type}>
+                                        {getCategoryDisplayName(type)}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     )}
@@ -252,11 +256,69 @@ export function ModalEditProduct({ setShowModalEdit, showModalEdit, idProduct })
     const [imgProduct, setImgProduct] = useState(null);
     const [priceProduct, setPriceProduct] = useState(0);
     const [desProduct, setDesProduct] = useState('');
-    const [valueProduct, setValueProduct] = useState('');
-    const [selectedCheckbox, setSelectedCheckbox] = useState('');
-    const [checkOption, setCheckOption] = useState('0');
-    const [checkType, setCheckType] = useState('');
     const [quantityPro, setQuantityPro] = useState(0);
+    const [categories, setCategories] = useState([]);
+    const [productTypes, setProductTypes] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedType, setSelectedType] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    // Lấy danh sách danh mục sản phẩm từ database
+    useEffect(() => {
+        const fetchCategories = async () => {
+            setLoading(true);
+            try {
+                const response = await request.get('/api/categories');
+                setCategories(response.data);
+            } catch (error) {
+                console.error('Lỗi khi lấy danh mục:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+    // Lấy danh sách loại sản phẩm khi chọn danh mục
+    useEffect(() => {
+        const fetchProductTypes = async () => {
+            if (selectedCategory) {
+                setLoading(true);
+                try {
+                    const response = await request.get('/api/product-types', {
+                        params: { category: selectedCategory },
+                    });
+                    setProductTypes(response.data);
+                } catch (error) {
+                    console.error('Lỗi khi lấy loại sản phẩm:', error);
+                } finally {
+                    setLoading(false);
+                }
+            } else {
+                setProductTypes([]);
+            }
+        };
+
+        fetchProductTypes();
+    }, [selectedCategory]);
+
+    // Hàm chuyển đổi tên danh mục thành tên hiển thị
+    const getCategoryDisplayName = (categoryCode) => {
+        const categoryMap = {
+            nuocHoa: 'Nước Hoa',
+            nenThom: 'Nến Thơm',
+            giay: 'Giày',
+            son: 'Son',
+            fashionMen: 'Thời Trang Nam',
+            fashionWomen: 'Thời Trang Nữ',
+            áo: 'Áo',
+            quần: 'Quần',
+            váy: 'Váy',
+        };
+
+        return categoryMap[categoryCode] || categoryCode;
+    };
 
     useEffect(() => {
         if (showModalEdit) {
@@ -267,11 +329,9 @@ export function ModalEditProduct({ setShowModalEdit, showModalEdit, idProduct })
                     setNameProduct(data.nameProducts);
                     setPriceProduct(data.priceNew);
                     setDesProduct(data.des);
-                    setValueProduct(data.quantityPro);
-                    setSelectedCheckbox(data.checkProducts);
-                    setCheckOption(data.checkOption);
-                    setCheckType(data.checkType);
                     setQuantityPro(data.quantityPro);
+                    setSelectedCategory(data.checkProducts);
+                    setSelectedType(data.checkType);
                 } catch (error) {
                     toast.error('Lỗi khi tải dữ liệu sản phẩm');
                 }
@@ -280,25 +340,15 @@ export function ModalEditProduct({ setShowModalEdit, showModalEdit, idProduct })
         }
     }, [showModalEdit, idProduct]);
 
-    const handleCheckboxChange = (checkboxName) => {
-        if (selectedCheckbox === checkboxName) {
-            setSelectedCheckbox('');
-        } else {
-            setSelectedCheckbox(checkboxName);
-        }
-    };
-
     const handleEditProduct = async () => {
-        const checkProduct = selectedCheckbox || (checkOption === '1' ? 'fashionMen' : 'fashionWomen');
         const formData = new FormData();
         formData.append('nameProduct', nameProduct);
         formData.append('imgpro', imgProduct);
         formData.append('priceProduct', priceProduct);
         formData.append('desProduct', desProduct);
-        formData.append('valueProduct', valueProduct);
         formData.append('id', idProduct);
-        formData.append('checkProduct', checkProduct);
-        formData.append('checkType', checkType);
+        formData.append('checkProduct', selectedCategory);
+        formData.append('checkType', selectedType);
         formData.append('quantityPro', quantityPro);
 
         try {
@@ -360,75 +410,43 @@ export function ModalEditProduct({ setShowModalEdit, showModalEdit, idProduct })
                             <label>Mô Tả Sản Phẩm</label>
                         </div>
                     </div>
-                    <div className={cx('option')}>
-                        <div className={cx('form-checkbox')}>
-                            <label>Nước Hoa</label>
-                            <input
-                                type="checkbox"
-                                checked={selectedCheckbox === 'nuocHoa'}
-                                onChange={() => handleCheckboxChange('nuocHoa')}
-                            />
-                        </div>
-                        <div className={cx('form-checkbox')}>
-                            <label>Nến Thơm</label>
-                            <input
-                                type="checkbox"
-                                checked={selectedCheckbox === 'nenThom'}
-                                onChange={() => handleCheckboxChange('nenThom')}
-                            />
-                        </div>
-                        <div className={cx('form-checkbox')}>
-                            <label>Son</label>
-                            <input
-                                type="checkbox"
-                                checked={selectedCheckbox === 'son'}
-                                onChange={() => handleCheckboxChange('son')}
-                            />
-                        </div>
-                    </div>
-                    <div>
+
+                    <div className="mb-3">
+                        <label className="form-label">Danh mục sản phẩm</label>
                         <select
-                            value={checkOption}
-                            onChange={(e) => setCheckOption(e.target.value)}
-                            className="form-select mt-3"
-                            aria-label="Default select example"
+                            className="form-select"
+                            onChange={(e) => setSelectedCategory(e.target.value)}
+                            value={selectedCategory}
+                            disabled={loading}
                         >
-                            <option value="0">Thời Trang</option>
-                            <option value="1">Thời Trang Nam</option>
-                            <option value="2">Thời Trang Nữ</option>
+                            <option value="">Chọn danh mục</option>
+                            {categories.map((category) => (
+                                <option key={category} value={category}>
+                                    {getCategoryDisplayName(category)}
+                                </option>
+                            ))}
                         </select>
                     </div>
-                    {checkOption === '1' && (
-                        <div>
+
+                    {productTypes.length > 0 && (
+                        <div className="mb-3">
+                            <label className="form-label">Loại sản phẩm</label>
                             <select
-                                value={checkType}
-                                onChange={(e) => setCheckType(e.target.value)}
-                                className="form-select mt-3"
-                                aria-label="Default select example"
+                                className="form-select"
+                                onChange={(e) => setSelectedType(e.target.value)}
+                                value={selectedType}
+                                disabled={loading}
                             >
-                                <option value="">Loại</option>
-                                <option value="trousers">Áo</option>
-                                <option value="shirt">Quần</option>
-                                <option value="giay">Giày Nam</option>
+                                <option value="">Chọn loại</option>
+                                {productTypes.map((type) => (
+                                    <option key={type} value={type}>
+                                        {getCategoryDisplayName(type)}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     )}
-                    {checkOption === '2' && (
-                        <div>
-                            <select
-                                value={checkType}
-                                onChange={(e) => setCheckType(e.target.value)}
-                                className="form-select mt-3"
-                                aria-label="Default select example"
-                            >
-                                <option value="">Loại</option>
-                                <option value="trousers">Áo</option>
-                                <option value="shirt">Quần</option>
-                                <option value="dress">Váy</option>
-                                <option value="giay">Giày Nữ</option>
-                            </select>
-                        </div>
-                    )}
+
                     <div className="form-floating mt-3">
                         <input
                             type="number"
@@ -676,7 +694,7 @@ export function EditBlog({ show, setShow, id }) {
 
     return (
         <Modal show={show} onHide={handleClose}>
-            <ToastContainer/>
+            <ToastContainer />
             <Modal.Header closeButton>
                 <Modal.Title>Chỉnh Sửa Bài Viết</Modal.Title>
             </Modal.Header>

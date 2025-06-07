@@ -1,0 +1,440 @@
+BÁO CÁO XÂY DỰNG WEBSITE DEMO
+
+1. Trang web hoạt động, lưu trữ dữ liệu và tương tác với người dùng cuối
+
+1.1. Kiến trúc tổng thể
+Website được xây dựng theo mô hình MERN Stack:
+- MongoDB: Cơ sở dữ liệu NoSQL lưu trữ thông tin sản phẩm, người dùng, đơn hàng
+- Express.js: Framework Node.js xây dựng RESTful API
+- React.js: Thư viện JavaScript xây dựng giao diện người dùng
+- Node.js: Môi trường runtime JavaScript phía server
+
+1.2. Chức năng lưu trữ dữ liệu
+Website sử dụng MongoDB để lưu trữ dữ liệu với các mô hình (model) chính:
+
+- ModelUser: Lưu trữ thông tin người dùng (email, mật khẩu đã mã hóa, thông tin cá nhân)
+- ModelProducts: Lưu trữ thông tin sản phẩm (tên, giá, hình ảnh, mô tả, danh mục)
+- ModelPaymentSuccess: Lưu trữ thông tin đơn hàng (sản phẩm, số lượng, giá, trạng thái)
+- ModelComments: Lưu trữ đánh giá và bình luận của người dùng
+
+Ví dụ mô hình đơn hàng:
+```javascript
+const ModelPaymentSuccess = new Schema(
+    {
+        id: { type: Number, default: 0 },
+        email: { type: String, default: '' },
+        products: [
+            {
+                nameProduct: { type: String, default: '' },
+                quantity: { type: Number, default: 0 },
+                price: { type: Number, default: 0 },
+            },
+        ],
+        sumPrice: { type: Number, default: 0 },
+        statusOrder: { type: Boolean, default: false },
+        statusPayment: { type: Boolean, default: false },
+        order: { type: Boolean, default: false },
+        idCode: { type: String, default: '' },
+    },
+    { timestamps: true },
+);
+```
+
+1.3. Tương tác với người dùng cuối
+Website cung cấp nhiều tính năng tương tác với người dùng:
+
+1.3.1. Hệ thống xác thực
+- Đăng ký: Người dùng có thể tạo tài khoản mới với email, mật khẩu
+- Đăng nhập: Xác thực người dùng và cấp JWT token
+- Quên mật khẩu: Gửi email với mã OTP để đặt lại mật khẩu
+
+1.3.2. Quản lý sản phẩm
+- Hiển thị sản phẩm: Phân loại theo danh mục (thời trang nam, thời trang nữ)
+- Tìm kiếm: Tìm kiếm sản phẩm theo tên
+- Chi tiết sản phẩm: Xem thông tin chi tiết, đánh giá và bình luận
+
+1.3.3. Giỏ hàng và đặt hàng
+- Thêm vào giỏ hàng: Lưu trữ sản phẩm người dùng muốn mua
+- Thanh toán: Chọn phương thức thanh toán (COD hoặc thanh toán trực tuyến)
+- Xác nhận đơn hàng: Hiển thị thông tin đơn hàng sau khi đặt hàng thành công
+
+1.3.4. Quản lý đơn hàng
+- Lịch sử đơn hàng: Người dùng có thể xem tất cả đơn hàng đã đặt
+- Lọc đơn hàng: Theo trạng thái (đang xử lý, đã hoàn thành, đã hủy)
+- Chi tiết đơn hàng: Xem thông tin chi tiết về sản phẩm, giá cả, trạng thái
+- Hủy đơn hàng: Người dùng có thể hủy đơn hàng chưa được xử lý
+
+Ví dụ API lấy lịch sử đơn hàng:
+```javascript
+GetOrder(req, res) {
+    try {
+        const token = req.cookies.Token;
+        if (!token) {
+            return res.status(401).json({ message: 'Không tìm thấy token' });
+        }
+
+        const decoded = jwt.decode(token.Token);
+        if (!decoded) {
+            return res.status(401).json({ message: 'Token không hợp lệ' });
+        }
+
+        ModelPaymentSuccess.find({ email: decoded.email })
+            .sort({ createdAt: -1 })
+            .then((dataOrder) => {
+                return res.status(200).json(dataOrder);
+            })
+            .catch((error) => {
+                return res.status(500).json({ message: 'Lỗi khi tìm đơn hàng' });
+            });
+    } catch (error) {
+        return res.status(500).json({ message: 'Lỗi máy chủ' });
+    }
+}
+```
+
+1.3.5. Quản lý tài khoản
+- Thông tin cá nhân: Xem và cập nhật thông tin
+- Đổi mật khẩu: Thay đổi mật khẩu đăng nhập
+- Đổi avatar: Tải lên và cập nhật ảnh đại diện
+
+2. Cơ chế tích hợp cổng thanh toán & demo
+
+2.1. Các cổng thanh toán được tích hợp
+Website tích hợp hai cổng thanh toán chính:
+1. VNPAY: Cổng thanh toán phổ biến tại Việt Nam
+2. MoMo: Ví điện tử phổ biến tại Việt Nam
+
+2.2. Quy trình thanh toán
+
+2.2.1. Thanh toán qua VNPAY
+1. Khởi tạo giao dịch:
+   - Người dùng chọn thanh toán qua VNPAY
+   - Hệ thống tạo đơn hàng và chuyển hướng đến cổng thanh toán VNPAY
+
+2. Xử lý thanh toán:
+   - Người dùng nhập thông tin thẻ và xác nhận thanh toán
+   - VNPAY xử lý giao dịch và chuyển hướng về trang callback
+
+3. Xác nhận kết quả:
+   - Hệ thống kiểm tra kết quả thanh toán từ VNPAY
+   - Cập nhật trạng thái đơn hàng (đã thanh toán hoặc chưa thanh toán)
+
+2.2.2. Thanh toán qua MoMo
+1. Khởi tạo giao dịch:
+   - Người dùng chọn thanh toán qua MoMo
+   - Hệ thống gửi yêu cầu thanh toán đến MoMo API
+
+2. Xử lý thanh toán:
+   - Người dùng xác nhận thanh toán trên ứng dụng MoMo
+   - MoMo xử lý giao dịch và gửi kết quả về server
+
+3. Xác nhận kết quả:
+   - Hệ thống kiểm tra kết quả thanh toán từ MoMo
+   - Cập nhật trạng thái đơn hàng
+
+2.3. Demo thanh toán
+
+2.3.1. Thanh toán COD (Cash On Delivery)
+- Người dùng chọn phương thức "Thanh toán khi nhận hàng"
+- Hệ thống lưu đơn hàng với `statusPayment: false`
+- Sau khi giao hàng và thu tiền, admin cập nhật trạng thái thanh toán
+
+Ví dụ code xử lý thanh toán COD:
+```javascript
+// Xử lý đặt hàng COD trong file Checkout.js
+const handleCODPayment = async () => {
+    try {
+        setLoading(true);
+        
+        // Lấy thông tin giỏ hàng
+        const cartResponse = await request.get('/api/getcart');
+        const cartData = cartResponse.data;
+        
+        // Tạo đơn hàng mới
+        const orderData = {
+            products: cartData,
+            sumPrice: totalPrice,
+            statusPayment: false, // Thanh toán khi nhận hàng
+            statusOrder: false,   // Đơn hàng chưa hoàn thành
+            order: false,         // Đơn hàng chưa bị hủy
+            idCode: generateOrderId()
+        };
+        
+        // Gửi yêu cầu tạo đơn hàng
+        const response = await request.post('/api/createorder', orderData);
+        
+        // Xóa giỏ hàng sau khi đặt hàng thành công
+        await request.post('/api/clearcart');
+        
+        // Chuyển hướng đến trang xác nhận đơn hàng
+        navigate('/thanks');
+        
+    } catch (error) {
+        console.error('Lỗi khi đặt hàng:', error);
+        toast.error('Đã xảy ra lỗi khi đặt hàng');
+    } finally {
+        setLoading(false);
+    }
+};
+```
+
+2.3.2. Thanh toán VNPAY
+- Người dùng chọn phương thức "Thanh toán qua VNPAY"
+- Hệ thống tạo URL thanh toán với thông tin đơn hàng
+- Người dùng được chuyển hướng đến trang thanh toán VNPAY
+- Sau khi thanh toán thành công, hệ thống lưu đơn hàng với `statusPayment: true`
+
+Ví dụ code xử lý thanh toán VNPAY:
+```javascript
+// API xử lý thanh toán VNPAY trong server
+async Payment(req, res) {
+    // Lấy địa chỉ IP của người dùng
+    const ipAddr = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    
+    // Lấy thông tin cấu hình VNPAY từ biến môi trường
+    const tmnCode = process.env.vnp_TmnCode;
+    const secretKey = process.env.vnp_HashSecret;
+    let vnpUrl = process.env.vnp_Url;
+    const returnUrl = process.env.vnp_ReturnUrl;
+    
+    // Tạo thông tin đơn hàng
+    const date = new Date();
+    const createDate = format(date, 'yyyyMMddHHmmss');
+    const orderId = format(date, 'HHmmss');
+    const amount = req.body.amount;
+    const bankCode = req.body.bankCode;
+    const orderInfo = req.body.orderDescription;
+    const orderType = req.body.orderType;
+    let locale = req.body.language || 'vn';
+    const currCode = 'VND';
+    
+    // Tạo tham số cho VNPAY
+    let vnp_Params = {};
+    vnp_Params['vnp_Version'] = '2.1.0';
+    vnp_Params['vnp_Command'] = 'pay';
+    vnp_Params['vnp_TmnCode'] = tmnCode;
+    vnp_Params['vnp_Locale'] = locale;
+    vnp_Params['vnp_CurrCode'] = currCode;
+    vnp_Params['vnp_TxnRef'] = orderId;
+    vnp_Params['vnp_OrderInfo'] = orderInfo;
+    vnp_Params['vnp_OrderType'] = orderType;
+    vnp_Params['vnp_Amount'] = amount * 100;
+    vnp_Params['vnp_ReturnUrl'] = returnUrl;
+    vnp_Params['vnp_IpAddr'] = ipAddr;
+    vnp_Params['vnp_CreateDate'] = createDate;
+    
+    if (bankCode) {
+        vnp_Params['vnp_BankCode'] = bankCode;
+    }
+    
+    // Sắp xếp tham số theo thứ tự alphabet
+    vnp_Params = sortObject(vnp_Params);
+    
+    // Tạo chữ ký số
+    const signData = querystring.stringify(vnp_Params, { encode: false });
+    const hmac = crypto.createHmac('sha512', secretKey);
+    const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
+    vnp_Params['vnp_SecureHash'] = signed;
+    
+    // Tạo URL thanh toán
+    vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false });
+    
+    // Trả về URL thanh toán cho client
+    return res.status(200).json({ url: vnpUrl });
+}
+
+// Client-side: Xử lý chuyển hướng đến VNPAY
+const handleVNPayPayment = async () => {
+    try {
+        setLoading(true);
+        
+        // Chuẩn bị dữ liệu thanh toán
+        const paymentData = {
+            amount: totalPrice,
+            orderDescription: `Thanh toan don hang #${Date.now()}`,
+            orderType: 'billpayment',
+            language: 'vn'
+        };
+        
+        // Gọi API để lấy URL thanh toán
+        const response = await request.post('/api/payment', paymentData);
+        
+        // Chuyển hướng người dùng đến trang thanh toán VNPAY
+        if (response.data && response.data.url) {
+            window.location.href = response.data.url;
+        } else {
+            toast.error('Không thể tạo liên kết thanh toán');
+        }
+        
+    } catch (error) {
+        console.error('Lỗi khi thanh toán:', error);
+        toast.error('Đã xảy ra lỗi khi xử lý thanh toán');
+    } finally {
+        setLoading(false);
+    }
+};
+```
+
+2.3.3. Xử lý callback từ VNPAY
+```javascript
+// API xử lý callback từ VNPAY
+async VNPayReturn(req, res) {
+    try {
+        const vnp_Params = req.query;
+        const secureHash = vnp_Params['vnp_SecureHash'];
+        
+        // Xóa chữ ký khỏi danh sách tham số
+        delete vnp_Params['vnp_SecureHash'];
+        delete vnp_Params['vnp_SecureHashType'];
+        
+        // Sắp xếp tham số
+        const sortedParams = sortObject(vnp_Params);
+        
+        // Lấy secret key từ biến môi trường
+        const secretKey = process.env.vnp_HashSecret;
+        
+        // Tạo chữ ký để kiểm tra
+        const signData = querystring.stringify(sortedParams, { encode: false });
+        const hmac = crypto.createHmac('sha512', secretKey);
+        const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
+        
+        // So sánh chữ ký nhận được với chữ ký tính toán
+        if (secureHash === signed) {
+            // Kiểm tra kết quả giao dịch
+            const responseCode = vnp_Params['vnp_ResponseCode'];
+            
+            if (responseCode === '00') {
+                // Giao dịch thành công
+                // Lấy thông tin đơn hàng từ mã giao dịch
+                const orderId = vnp_Params['vnp_TxnRef'];
+                const amount = vnp_Params['vnp_Amount'] / 100;
+                
+                // Cập nhật trạng thái đơn hàng trong database
+                await ModelPaymentSuccess.findOneAndUpdate(
+                    { idCode: orderId },
+                    { statusPayment: true }
+                );
+                
+                // Chuyển hướng về trang cảm ơn
+                return res.redirect('/thanks');
+            } else {
+                // Giao dịch thất bại
+                return res.redirect('/payment-failed');
+            }
+        } else {
+            // Chữ ký không hợp lệ
+            return res.status(400).json({ message: 'Chữ ký không hợp lệ' });
+        }
+    } catch (error) {
+        console.error('Lỗi xử lý callback VNPAY:', error);
+        return res.status(500).json({ message: 'Lỗi máy chủ' });
+    }
+}
+```
+
+2.3.4. Xác nhận và hiển thị kết quả thanh toán
+- Sau khi thanh toán, người dùng được chuyển đến trang "Thanh toán thành công"
+- Trang hiển thị thông tin đơn hàng, trạng thái thanh toán
+- Người dùng có thể xem lại đơn hàng trong "Lịch sử đơn hàng"
+
+```javascript
+// Component hiển thị thông tin đơn hàng thành công
+function SuccessfulPaymentPage() {
+    const [orderData, setOrderData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    
+    useEffect(() => {
+        const fetchOrderData = async () => {
+            try {
+                setLoading(true);
+                const response = await request.get('/api/successPayment');
+                
+                if (response.data && response.data.length > 0 && response.data[0][0]) {
+                    setOrderData(response.data[0][0]);
+                }
+            } catch (error) {
+                console.error('Lỗi khi lấy thông tin đơn hàng:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchOrderData();
+    }, []);
+    
+    return (
+        <div className={cx('wrapper')}>
+            <header>
+                <Header />
+            </header>
+
+            <main className={cx('inner')}>
+                <div className={cx('form-thanks-order')}>
+                    <header className={cx('header')}>
+                        <img src={imgCheck} alt="Đặt hàng thành công" />
+                        <h3>Cảm ơn bạn đã đặt hàng!</h3>
+                    </header>
+
+                    {orderData && (
+                        <main>
+                            <div className={cx('order-info')}>
+                                <p>Mã đơn hàng: <strong>{orderData.idCode || orderData._id}</strong></p>
+                                <p>Ngày đặt hàng: <strong>{new Date(orderData.createdAt).toLocaleString('vi-VN')}</strong></p>
+                            </div>
+
+                            <table className={cx('table')}>
+                                <thead>
+                                    <tr>
+                                        <th>Sản phẩm</th>
+                                        <th>Số lượng</th>
+                                        <th>Đơn giá</th>
+                                        <th>Thành tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {orderData.products && orderData.products.map((item, index) => (
+                                        <tr key={index}>
+                                            <td>{item.nameProduct}</td>
+                                            <td>{item.quantity}</td>
+                                            <td>{item.price?.toLocaleString()} đ</td>
+                                            <td>{(item.price * item.quantity).toLocaleString()} đ</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colSpan="3">Tổng cộng</td>
+                                        <td>{orderData.sumPrice?.toLocaleString()} đ</td>
+                                    </tr>
+                                    <tr>
+                                        <td colSpan="4">
+                                            Trạng thái thanh toán:{' '}
+                                            {orderData.statusPayment ? (
+                                                <span className={cx('paid')}>Đã thanh toán</span>
+                                            ) : (
+                                                <span className={cx('unpaid')}>Thanh toán khi nhận hàng</span>
+                                            )}
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </main>
+                    )}
+                </div>
+            </main>
+
+            <footer>
+                <Footer />
+            </footer>
+        </div>
+    );
+}
+```
+
+2.4. Quản lý đơn hàng sau thanh toán
+- Admin: Có quyền xem tất cả đơn hàng, cập nhật trạng thái
+- Người dùng: Có thể xem đơn hàng của mình, hủy đơn nếu chưa xử lý
+- Thông báo: Gửi email xác nhận đơn hàng và cập nhật trạng thái
+
+Kết luận
+Website demo đã được xây dựng thành công với đầy đủ chức năng cần thiết cho một trang thương mại điện tử, bao gồm quản lý sản phẩm, giỏ hàng, đặt hàng và tích hợp cổng thanh toán. Hệ thống lưu trữ dữ liệu hiệu quả và cung cấp trải nghiệm người dùng tốt với nhiều tính năng tương tác. 

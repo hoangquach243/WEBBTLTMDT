@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState } from 'react';
 import classNames from 'classnames/bind';
 import styles from './ItemProducts.module.scss';
@@ -24,7 +25,7 @@ function ItemProducts({ dataProducts }) {
     const productsToShow = isDynamic
         ? dataProducts.map((item) => ({
               _id: item._id,
-              img: `http://localhost:5000/${item.img}`,
+              img: `http://localhost:5001/${item.img}`,
               name: item.nameProducts,
           }))
         : defaultProducts.map((item, index) => ({
@@ -44,10 +45,9 @@ function ItemProducts({ dataProducts }) {
         setCurrentIndex((prev) => (prev - 1 >= 0 ? prev - 1 : totalPages - 1));
     };
     let val = 100;
-    if(productsToShow.length > 4) {
-       val = 80;
-    }
-    else{
+    if (productsToShow.length > 4) {
+        val = 80;
+    } else {
         val = 100;
     }
     return (
@@ -61,16 +61,12 @@ function ItemProducts({ dataProducts }) {
                     className={cx('slider-inner')}
                     style={{
                         transform: `translateX(-${currentIndex * 100}%)`,
-                        width: `${(val/ VISIBLE_COUNT) * productsToShow.length}%`,
+                        width: `${(val / VISIBLE_COUNT) * productsToShow.length}%`,
                     }}
                 >
                     {productsToShow.map((product) => (
                         <div key={product._id} className={cx('row-product')}>
-                            <img
-                                id={cx('img-item')}
-                                src={product.img}
-                                alt={product.name}
-                            />
+                            <img id={cx('img-item')} src={product.img} alt={product.name} />
                             <span>{product.name}</span>
                         </div>
                     ))}

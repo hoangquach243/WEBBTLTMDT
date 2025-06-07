@@ -1,3 +1,4 @@
+import React from 'react';
 import classNames from 'classnames/bind';
 import styles from './Main.module.scss';
 import Slide from './Slide/Slide';
@@ -31,9 +32,7 @@ function Main() {
             </div>
 
             <div className={cx('item-products')}>
-                <ItemProducts 
-                dataProducts={dataProducts}
-                />
+                <ItemProducts dataProducts={dataProducts} />
             </div>
 
             <div>

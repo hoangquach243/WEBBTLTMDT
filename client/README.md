@@ -1,3 +1,42 @@
+# Vấn đề với ứng dụng client
+
+## Vấn đề chính
+
+Ứng dụng client đang gặp một số vấn đề về tương thích:
+
+1. **Lỗi OpenSSL**: Khi chạy ứng dụng với Node.js v22.14.0, xuất hiện lỗi `error:0308010C:digital envelope routines::unsupported`. Đây là do Node.js phiên bản mới không còn hỗ trợ một số thuật toán mã hóa cũ mà webpack trong React Scripts 3.0.1 sử dụng.
+
+2. **Lỗi React**: Các tệp JSX gặp lỗi `'React' must be in scope when using JSX` do phiên bản React 19.1.0 yêu cầu import React rõ ràng trong mỗi tệp sử dụng JSX, trong khi React Scripts 3.0.1 không hỗ trợ đầy đủ cho phiên bản React này.
+
+3. **Xung đột phụ thuộc**: Có các xung đột giữa các phụ thuộc trong dự án, đặc biệt là giữa chart.js và react-chartjs-2.
+
+## Cách giải quyết
+
+1. **Cho OpenSSL**: Thiết lập biến môi trường `NODE_OPTIONS=--openssl-legacy-provider` để cho phép sử dụng các thuật toán mã hóa cũ.
+
+2. **Cho React**: Có hai cách:
+
+    - Thêm `import React from 'react'` vào mỗi tệp JSX (như đã làm với Main.js)
+    - Hạ cấp xuống React 18.2.0 (đang được thực hiện)
+
+3. **Script đã cập nhật**: Đã cập nhật các script trong package.json để sử dụng cross-env, giúp thiết lập biến môi trường hoạt động trên cả Windows và macOS.
+
+## Cài đặt bổ sung
+
+```bash
+# Cài đặt cross-env để thiết lập biến môi trường đa nền tảng
+npm install cross-env --save-dev --legacy-peer-deps
+
+# Nếu cần, cài đặt React 18.2.0
+npm install react@18.2.0 react-dom@18.2.0 --legacy-peer-deps
+```
+
+## Lưu ý quan trọng
+
+-   Sử dụng `--legacy-peer-deps` khi cài đặt các gói để tránh xung đột phụ thuộc
+-   Đảm bảo các tệp JSX có dòng `import React from 'react'` ở đầu tệp
+-   Nếu tiếp tục gặp lỗi, có thể cần cập nhật react-scripts lên phiên bản mới hơn
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

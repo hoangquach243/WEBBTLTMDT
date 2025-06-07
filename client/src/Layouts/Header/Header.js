@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import useDebounce from '../../customHook/useDebounce';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faHeart } from '@fortawesome/free-regular-svg-icons';
+import { faUser } from '@fortawesome/free-regular-svg-icons';
 import { faBars, faCartShopping, faSearch, faXmark, faAngleDown } from '@fortawesome/free-solid-svg-icons';
 
 const cx = classNames.bind(styles);
@@ -143,10 +143,6 @@ function Header() {
                             )}
                         </div>
                     </div>
-
-                    <Link to="/wishlist" className={cx('action-btn')}>
-                        <FontAwesomeIcon icon={faHeart} />
-                    </Link>
 
                     <Link to="/cart" className={cx('action-btn', 'cart-btn')}>
                         <FontAwesomeIcon icon={faCartShopping} />

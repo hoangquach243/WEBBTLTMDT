@@ -13,6 +13,11 @@ import LoginUser from '../Pages/Login/LoginUser';
 import ProductDetail from '../Pages/ProductDetail/ProductDetail';
 import RegisterUser from '../Pages/Register/RegisterUser';
 import SuccessfulPaymentPage from '../Pages/SuccessfulPaymentPage/SuccessfulPaymentPage';
+import ReturnPolicy from '../Pages/Policy/ReturnPolicy/ReturnPolicy';
+import ShippingPolicy from '../Pages/Policy/ShippingPolicy/ShippingPolicy';
+import PrivacyPolicy from '../Pages/Policy/PrivacyPolicy/PrivacyPolicy';
+import TermsOfUse from '../Pages/Policy/TermsOfUse/TermsOfUse';
+import PurchaseGuide from '../Pages/Policy/PurchaseGuide/PurchaseGuide';
 
 export const publicRoutes = [
     { path: '/', element: <App /> },
@@ -28,6 +33,11 @@ export const publicRoutes = [
     { path: '/contact', element: <Contact /> },
     { path: '/aboutus', element: <Blogger /> },
     { path: '/forgot-password', element: <ForgotPassword /> },
+    { path: '/chinh-sach-doi-tra', element: <ReturnPolicy /> },
+    { path: '/chinh-sach-van-chuyen', element: <ShippingPolicy /> },
+    { path: '/chinh-sach-bao-mat', element: <PrivacyPolicy /> },
+    { path: '/dieu-khoan-su-dung', element: <TermsOfUse /> },
+    { path: '/huong-dan-mua-hang', element: <PurchaseGuide /> },
 ];
 
 export const privateRoute = [{ path: '/admin', element: <DefaultLayout /> }];

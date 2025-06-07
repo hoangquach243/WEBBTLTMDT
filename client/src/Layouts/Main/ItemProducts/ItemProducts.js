@@ -45,9 +45,13 @@ function ItemProducts({ dataProducts }) {
         setCurrentIndex((prev) => (prev - 1 >= 0 ? prev - 1 : totalPages - 1));
     };
     let val = 100;
-    if (productsToShow.length > 4) {
-        val = 80;
-    } else {
+    if(productsToShow.length > 4 && productsToShow.length == 12) {
+       val = 35;
+    }
+    else if(productsToShow.length > 4) {
+       val = 100 -productsToShow.length*5; 
+    }
+    else{
         val = 100;
     }
     return (
